@@ -5,6 +5,7 @@ generator client {
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model Restaurant {
@@ -13,6 +14,7 @@ model Restaurant {
   location      String
   contactNumber String
   ratings       Float
+  imageUrl      String?
   menus         Menu[]
   orders        Order[]
   waiters       Waiter[]
@@ -37,6 +39,7 @@ model Menu {
   portionSize      String
   itemType         String
   preparationTime  Int         @default(0) // Added for wait time calculations
+  imageUrl         String?
   restaurantId     String
   restaurant       Restaurant  @relation(fields: [restaurantId], references: [id])
   orderItems       OrderItem[]
