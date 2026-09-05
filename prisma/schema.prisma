@@ -5,7 +5,6 @@ generator client {
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
 }
 
 model Restaurant {
@@ -32,22 +31,24 @@ model Customer {
 }
 
 model Menu {
-  id           String      @id @default(cuid())
-  itemName     String
-  itemPrice    Float
-  portionSize  String
-  itemType     String
-  restaurantId String
-  restaurant   Restaurant  @relation(fields: [restaurantId], references: [id])
-  orderItems   OrderItem[]
+  id               String      @id @default(cuid())
+  itemName         String
+  itemPrice        Float
+  portionSize      String
+  itemType         String
+  preparationTime  Int         @default(0) // Added for wait time calculations
+  restaurantId     String
+  restaurant       Restaurant  @relation(fields: [restaurantId], references: [id])
+  orderItems       OrderItem[]
 }
 
 model Order {
   id           String      @id @default(cuid())
-  orderDate    String
-  orderTime    String
-  waitTime     String
-  status       String
+  orderDate    String?
+  orderTime    String?
+  createdAt    DateTime    @default(now())
+  waitTime     Int         @default(0) // Kept as waitTime to match schema but changed to Int
+  status       String      @default("pending")
   restaurantId String
   restaurant   Restaurant  @relation(fields: [restaurantId], references: [id])
   waiterId     String?
