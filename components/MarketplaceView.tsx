@@ -11,12 +11,12 @@ import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, Pagi
 export default function MarketplaceView({ restaurants }: { restaurants: any[] }) {
   // Dummy pagination logic (since we only have 10, we'll pretend there are more pages)
   const [page, setPage] = useState(1);
-  const itemsPerPage = 6;
-  const totalPages = 10; // Dummy long pagination
+  const itemsPerPage = 9;
+  const totalPages = Math.ceil(restaurants.length / itemsPerPage);
 
   const currentRestaurants = restaurants.slice(
-    ((page - 1) % 2) * itemsPerPage, 
-    (((page - 1) % 2) + 1) * itemsPerPage
+    (page - 1) * itemsPerPage, 
+    page * itemsPerPage
   );
 
   return (
@@ -99,31 +99,20 @@ export default function MarketplaceView({ restaurants }: { restaurants: any[] })
               />
             </PaginationItem>
             
-            {[1, 2, 3].map(p => (
-              <PaginationItem key={p}>
-                <PaginationLink 
-                  href="#" 
-                  isActive={page === p}
-                  onClick={(e) => { e.preventDefault(); setPage(p) }}
-                >
-                  {p}
-                </PaginationLink>
-              </PaginationItem>
-            ))}
-            
-            <PaginationItem>
-              <PaginationEllipsis />
-            </PaginationItem>
-            
-            <PaginationItem>
-              <PaginationLink 
-                href="#" 
-                isActive={page === totalPages}
-                onClick={(e) => { e.preventDefault(); setPage(totalPages) }}
-              >
-                {totalPages}
-              </PaginationLink>
-            </PaginationItem>
+            {Array.from({ length: totalPages }).map((_, i) => {
+              const p = i + 1;
+              return (
+                <PaginationItem key={p}>
+                  <PaginationLink 
+                    href="#" 
+                    isActive={page === p}
+                    onClick={(e) => { e.preventDefault(); setPage(p) }}
+                  >
+                    {p}
+                  </PaginationLink>
+                </PaginationItem>
+              );
+            })}
             
             <PaginationItem>
               <PaginationNext 

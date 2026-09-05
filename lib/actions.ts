@@ -1,7 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, unstable_noStore as noStore } from "next/cache";
 
 export type OrderItemInput = {
   menuId: string;
@@ -63,7 +63,7 @@ async function mapOrders(orders: any[]) {
     isPaid: !!order.payment,
     items: order.items.map((i: any) => ({
       menuId: i.menuItem.id,
-      name: i.menuItem.itemName,
+      name: i.menuItem.itemName, itemType: i.menuItem.itemType,
       price: i.menuItem.itemPrice,
       quantity: i.quantity,
       preparationTime: i.menuItem.preparationTime,
@@ -73,6 +73,7 @@ async function mapOrders(orders: any[]) {
 }
 
 export async function getAllOrders(restaurantId?: string) {
+  noStore();
   const orders = await prisma.order.findMany({
     where: restaurantId ? { restaurantId } : {},
     orderBy: { createdAt: "desc" },
@@ -88,9 +89,27 @@ export async function getAllOrders(restaurantId?: string) {
 }
 
 export async function getPendingOrders(restaurantId?: string) {
+  noStore();
   const orders = await prisma.order.findMany({
     where: { status: "pending", ...(restaurantId ? { restaurantId } : {}) },
     orderBy: { createdAt: "asc" },
+    include: {
+      chef: true,
+      bartender: true,
+      review: true,
+      payment: true,
+      items: { include: { menuItem: true } }
+    }
+  });
+  return mapOrders(orders);
+}
+
+export async function getCompletedOrders(restaurantId?: string) {
+  noStore();
+  const orders = await prisma.order.findMany({
+    where: { status: "served", ...(restaurantId ? { restaurantId } : {}) },
+    orderBy: { createdAt: "desc" },
+    take: 20,
     include: {
       chef: true,
       bartender: true,
@@ -211,7 +230,6 @@ export async function processPayment(orderId: string) {
     create: { amount: total, paymentMethod: "PRETEND", paymentTime: new Date().toISOString(), orderId: orderId }
   });
 
-  await prisma.order.update({ where: { id: orderId }, data: { status: "paid" } });
-  revalidatePath("/");
+  revalidatePath("/", "layout");
   return payment;
 }
