@@ -71,7 +71,7 @@ export default function WaiterView({ restaurant, staff, initialOrders }: { resta
             <p className="text-muted-foreground mt-2">No pending orders right now. Take a breather.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {orders.map((order, i) => {
               const sel = selections[order.id] || { chef: order.assignedChef || "", bartender: order.assignedBartender || "" };
               const elapsedMinutes = Math.floor((Date.now() - new Date(order.createdAt).getTime()) / 60000);
@@ -155,7 +155,7 @@ export default function WaiterView({ restaurant, staff, initialOrders }: { resta
         {completedOrders.length === 0 ? (
           <p className="text-muted-foreground italic">No completed orders yet.</p>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-4 gap-4 opacity-80">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 opacity-80">
             {completedOrders.map((order) => (
               <Card key={order.id} className="p-4 bg-muted border-border">
                 <div className="flex justify-between items-center mb-3">

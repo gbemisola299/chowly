@@ -186,14 +186,14 @@ export default function CustomerView({ restaurant, menu }: { restaurant: any, me
   }
 
   return (
-    <div className="max-w-6xl mx-auto py-8 lg:py-12 flex flex-col lg:flex-row gap-8 items-start">
+    <div className="max-w-6xl mx-auto px-4 md:px-6 lg:px-8 py-8 lg:py-12 flex flex-col lg:flex-row gap-8 items-start">
       <div className="flex-1 w-full space-y-6">
         <div className="mb-8">
           <h2 className="text-3xl font-black text-foreground tracking-tight">Our Menu</h2>
           <p className="text-muted-foreground mt-2 text-lg">Select your favorites and we'll take care of the rest.</p>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {menu.map((item, i) => (
             <motion.div key={item.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
               <Card className="overflow-hidden flex border-border hover:border-primary/50 transition-colors shadow-sm hover:shadow-md h-full bg-card text-card-foreground">
