@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { getMenu, getStaff, getAllOrders, getRestaurantById } from "@/lib/actions";
 import AppShell from "@/components/AppShell";
 import { notFound } from "next/navigation";

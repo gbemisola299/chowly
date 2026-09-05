@@ -54,6 +54,7 @@ async function mapOrders(orders: any[]) {
     createdAt: order.createdAt,
     status: order.status,
     waitingTime: order.waitTime,
+    note: order.note || null,
     restaurantId: order.restaurantId,
     assignedChef: order.chef?.name || null,
     assignedBartender: order.bartender?.name || null,
@@ -119,7 +120,7 @@ export async function getOrder(orderId: string) {
 
 // ---------- WRITE actions ----------
 
-export async function placeOrder(restaurantId: string, items: OrderItemInput[]) {
+export async function placeOrder(restaurantId: string, items: OrderItemInput[], note?: string) {
   if (!items || items.length === 0) {
     throw new Error("Cannot place an empty order.");
   }
@@ -130,6 +131,7 @@ export async function placeOrder(restaurantId: string, items: OrderItemInput[]) 
     data: {
       waitTime: waitingTime,
       status: "pending",
+      note: note || null,
       restaurantId: restaurantId,
       items: {
         create: items.map(i => ({
@@ -147,7 +149,7 @@ export async function placeOrder(restaurantId: string, items: OrderItemInput[]) 
     }
   });
 
-  revalidatePath("/");
+  revalidatePath("/", "layout");
   const mapped = await mapOrders([order]);
   return mapped[0];
 }
@@ -170,7 +172,7 @@ export async function assignOrder(orderId: string, chefName: string, bartenderNa
     data: { chefId, bartenderId },
   });
 
-  revalidatePath("/");
+  revalidatePath("/", "layout");
   return order;
 }
 
@@ -179,7 +181,7 @@ export async function markOrderServed(orderId: string) {
     where: { id: orderId },
     data: { status: "served" },
   });
-  revalidatePath("/");
+  revalidatePath("/", "layout");
   return order;
 }
 
@@ -190,7 +192,7 @@ export async function submitComplaint(orderId: string, complaint: string, rating
     update: { content: complaint, rating: rating, dateSubmitted: new Date().toISOString() },
     create: { content: complaint, rating: rating, dateSubmitted: new Date().toISOString(), orderId: orderId }
   });
-  revalidatePath("/");
+  revalidatePath("/", "layout");
   return review;
 }
 

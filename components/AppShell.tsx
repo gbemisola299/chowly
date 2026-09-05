@@ -33,7 +33,7 @@ export default function AppShell({
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col">
       <AppShellHeader 
         showRoleToggle={true} 
         role={role} 
@@ -49,11 +49,11 @@ export default function AppShell({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="absolute inset-0 flex items-center justify-center bg-gray-50/50 backdrop-blur-sm z-10"
+              className="absolute inset-0 flex items-center justify-center bg-background/50 backdrop-blur-sm z-10"
             >
-              <div className="flex flex-col items-center gap-3 bg-white p-6 rounded-2xl shadow-xl border">
-                <Loader2 className="w-8 h-8 animate-spin text-orange-600" />
-                <p className="font-medium text-gray-600">Switching roles...</p>
+              <div className="flex flex-col items-center gap-3 bg-card text-card-foreground p-6 rounded-2xl shadow-xl border border-border">
+                <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                <p className="font-medium text-muted-foreground">Switching roles...</p>
               </div>
             </motion.div>
           ) : (

@@ -25,7 +25,7 @@ export default function MarketplaceView({ restaurants }: { restaurants: any[] })
         <motion.h2 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-4xl md:text-5xl font-black tracking-tight text-gray-900"
+          className="text-4xl md:text-5xl font-black tracking-tight text-foreground"
         >
           Discover top spots near you
         </motion.h2>
@@ -33,7 +33,7 @@ export default function MarketplaceView({ restaurants }: { restaurants: any[] })
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="text-lg text-gray-600"
+          className="text-lg text-muted-foreground"
         >
           Explore menus, place orders seamlessly, and enjoy the best food in town.
         </motion.p>
@@ -49,8 +49,8 @@ export default function MarketplaceView({ restaurants }: { restaurants: any[] })
             whileHover={{ y: -5 }}
           >
             <Link href={`/restaurant/${restaurant.id}`}>
-              <Card className="overflow-hidden hover:shadow-xl transition-all duration-300 border-gray-200 h-full flex flex-col group cursor-pointer">
-                <div className="h-48 overflow-hidden relative bg-gray-100">
+              <Card className="overflow-hidden hover:shadow-xl transition-all duration-300 border-border h-full flex flex-col group cursor-pointer bg-card text-card-foreground">
+                <div className="h-48 overflow-hidden relative bg-muted">
                   <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors z-10" />
                   {restaurant.imageUrl ? (
                     <img 
@@ -59,26 +59,26 @@ export default function MarketplaceView({ restaurants }: { restaurants: any[] })
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-gray-300">
+                    <div className="w-full h-full flex items-center justify-center text-muted-foreground">
                       <Utensils size={48} />
                     </div>
                   )}
                   <div className="absolute top-4 right-4 z-20">
-                    <Badge className="bg-white/90 text-black hover:bg-white border-0 shadow-sm font-semibold flex items-center gap-1 backdrop-blur-md">
-                      <Star className="w-3.5 h-3.5 fill-orange-500 text-orange-500" />
+                    <Badge className="bg-background/90 text-foreground hover:bg-background border-0 shadow-sm font-semibold flex items-center gap-1 backdrop-blur-md">
+                      <Star className="w-3.5 h-3.5 fill-primary text-primary" />
                       {restaurant.ratings}
                     </Badge>
                   </div>
                 </div>
                 <CardHeader className="pb-2">
                   <CardTitle className="text-xl font-bold line-clamp-1">{restaurant.name}</CardTitle>
-                  <CardDescription className="flex items-center gap-1 text-sm text-gray-500 font-medium mt-1">
+                  <CardDescription className="flex items-center gap-1 text-sm text-muted-foreground font-medium mt-1">
                     <MapPin className="w-3.5 h-3.5" />
                     {restaurant.location}
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="flex-1">
-                  <p className="text-sm text-gray-600 line-clamp-2">
+                  <p className="text-sm text-muted-foreground line-clamp-2">
                     Experience the best flavors at {restaurant.name}, offering a wide variety of dishes and drinks.
                   </p>
                 </CardContent>

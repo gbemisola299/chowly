@@ -19,6 +19,7 @@ export default function WaiterView({ restaurant, staff, initialOrders }: { resta
   const refresh = async () => setOrders(await getPendingOrders(restaurant.id));
 
   useEffect(() => {
+    refresh(); // Instantly fetch fresh orders on mount
     const interval = setInterval(refresh, 5000);
     return () => clearInterval(interval);
   }, [restaurant.id]);
@@ -49,20 +50,20 @@ export default function WaiterView({ restaurant, staff, initialOrders }: { resta
     <div className="max-w-7xl mx-auto py-8 lg:py-12 space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-black text-gray-900 tracking-tight">Active Orders</h2>
-          <p className="text-gray-500 mt-1">Manage kitchen queue for {restaurant.name}</p>
+          <h2 className="text-3xl font-black text-foreground tracking-tight">Active Orders</h2>
+          <p className="text-muted-foreground mt-1">Manage kitchen queue for {restaurant.name}</p>
         </div>
-        <div className="bg-orange-100 text-orange-700 font-bold px-4 py-2 rounded-xl flex items-center gap-2">
+        <div className="bg-primary/10 text-primary font-bold px-4 py-2 rounded-xl flex items-center gap-2">
           <ChefHat size={20} />
           {orders.length} Pending
         </div>
       </div>
       
       {orders.length === 0 ? (
-        <div className="text-center py-20 bg-white rounded-3xl border border-dashed border-gray-200">
+        <div className="text-center py-20 bg-card rounded-3xl border border-dashed border-border text-card-foreground">
           <CheckCircle2 size={64} className="mx-auto text-green-500 mb-4 opacity-50" />
-          <h3 className="text-xl font-bold text-gray-800">All caught up!</h3>
-          <p className="text-gray-500 mt-2">No pending orders right now. Take a breather.</p>
+          <h3 className="text-xl font-bold text-foreground">All caught up!</h3>
+          <p className="text-muted-foreground mt-2">No pending orders right now. Take a breather.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
@@ -73,8 +74,8 @@ export default function WaiterView({ restaurant, staff, initialOrders }: { resta
 
             return (
               <motion.div key={order.id} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: i * 0.05 }}>
-                <Card className={`overflow-hidden border-2 transition-colors ${isDelayed ? "border-red-200 shadow-red-100" : "border-transparent hover:border-gray-200"}`}>
-                  <div className={`p-4 text-white flex justify-between items-center ${isDelayed ? "bg-red-600" : "bg-gray-900"}`}>
+                <Card className={`overflow-hidden border-2 transition-colors bg-card text-card-foreground ${isDelayed ? "border-destructive/30 shadow-destructive/10" : "border-transparent hover:border-border"}`}>
+                  <div className={`p-4 flex justify-between items-center ${isDelayed ? "bg-destructive text-destructive-foreground" : "bg-foreground text-background"}`}>
                     <div className="font-mono text-sm font-medium">#{order.id.slice(-6)}</div>
                     <div className="flex items-center gap-1.5 text-sm font-medium">
                       <Clock size={16} />
@@ -85,19 +86,26 @@ export default function WaiterView({ restaurant, staff, initialOrders }: { resta
                     <div className="space-y-2">
                       {order.items.map((it: any, idx: number) => (
                         <div key={idx} className="flex justify-between items-start text-sm">
-                          <span className="font-medium text-gray-800">
-                            <span className="bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded text-xs mr-2">{it.quantity}x</span>
+                          <span className="font-medium text-foreground">
+                            <span className="bg-muted text-muted-foreground px-1.5 py-0.5 rounded text-xs mr-2">{it.quantity}x</span>
                             {it.name}
                           </span>
                         </div>
                       ))}
                     </div>
 
-                    <div className="space-y-3 pt-4 border-t border-gray-100">
+                    {order.note && (
+                      <div className="bg-primary/10 border border-primary/20 text-primary-foreground p-3 rounded-lg text-sm mt-3">
+                        <span className="font-bold text-primary block mb-1">Note:</span>
+                        <span className="text-foreground/80 italic">"{order.note}"</span>
+                      </div>
+                    )}
+
+                    <div className="space-y-3 pt-4 border-t border-border">
                       <select
                         value={sel.chef}
                         onChange={(e) => setSelections((p) => ({ ...p, [order.id]: { ...sel, chef: e.target.value } }))}
-                        className="w-full bg-gray-50 border border-gray-200 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-orange-500 outline-none"
+                        className="w-full bg-background border border-border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-primary outline-none text-foreground"
                       >
                         <option value="">Assign Chef...</option>
                         {chefs.map((c) => <option key={c.id} value={c.name}>{c.name}</option>)}
@@ -105,7 +113,7 @@ export default function WaiterView({ restaurant, staff, initialOrders }: { resta
                       <select
                         value={sel.bartender}
                         onChange={(e) => setSelections((p) => ({ ...p, [order.id]: { ...sel, bartender: e.target.value } }))}
-                        className="w-full bg-gray-50 border border-gray-200 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-orange-500 outline-none"
+                        className="w-full bg-background border border-border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-primary outline-none text-foreground"
                       >
                         <option value="">Assign Bartender...</option>
                         {bartenders.map((b) => <option key={b.id} value={b.name}>{b.name}</option>)}
@@ -113,7 +121,7 @@ export default function WaiterView({ restaurant, staff, initialOrders }: { resta
                     </div>
 
                     <div className="flex gap-3 pt-2">
-                      <button onClick={() => handleAssign(order.id)} className="flex-1 bg-gray-100 text-gray-800 hover:bg-gray-200 transition rounded-lg py-2.5 text-sm font-semibold">
+                      <button onClick={() => handleAssign(order.id)} className="flex-1 bg-muted text-foreground hover:bg-muted/80 transition rounded-lg py-2.5 text-sm font-semibold">
                         Update
                       </button>
                       <button onClick={() => handleServed(order.id)} className="flex-1 bg-green-600 hover:bg-green-700 shadow-lg shadow-green-600/20 transition text-white rounded-lg py-2.5 text-sm font-semibold flex items-center justify-center gap-2">
