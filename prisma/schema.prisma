@@ -1,0 +1,114 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Restaurant {
+  id            String      @id @default(cuid())
+  name          String
+  location      String
+  contactNumber String
+  ratings       Float
+  menus         Menu[]
+  orders        Order[]
+  waiters       Waiter[]
+  chefs         Chef[]
+  bartenders    Bartender[]
+}
+
+model Customer {
+  id          String @id @default(cuid())
+  name        String
+  gender      String
+  age         Int
+  location    String
+  phoneNumber String
+  address     String
+}
+
+model Menu {
+  id           String      @id @default(cuid())
+  itemName     String
+  itemPrice    Float
+  portionSize  String
+  itemType     String
+  restaurantId String
+  restaurant   Restaurant  @relation(fields: [restaurantId], references: [id])
+  orderItems   OrderItem[]
+}
+
+model Order {
+  id           String      @id @default(cuid())
+  orderDate    String
+  orderTime    String
+  waitTime     String
+  status       String
+  restaurantId String
+  restaurant   Restaurant  @relation(fields: [restaurantId], references: [id])
+  waiterId     String?
+  waiter       Waiter?     @relation(fields: [waiterId], references: [id])
+  chefId       String?
+  chef         Chef?       @relation(fields: [chefId], references: [id])
+  bartenderId  String?
+  bartender    Bartender?  @relation(fields: [bartenderId], references: [id])
+  items        OrderItem[]
+  review       Review?
+  payment      Payment?
+}
+
+model Waiter {
+  id           String     @id @default(cuid())
+  name         String
+  restaurantId String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+  orders       Order[]
+}
+
+model Chef {
+  id             String     @id @default(cuid())
+  name           String
+  qualifications String
+  restaurantId   String
+  restaurant     Restaurant @relation(fields: [restaurantId], references: [id])
+  orders         Order[]
+}
+
+model Bartender {
+  id           String     @id @default(cuid())
+  name         String
+  restaurantId String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+  orders       Order[]
+}
+
+model OrderItem {
+  id         String @id @default(cuid())
+  quantity   Int
+  orderId    String
+  order      Order  @relation(fields: [orderId], references: [id])
+  menuItemId String
+  menuItem   Menu   @relation(fields: [menuItemId], references: [id])
+}
+
+model Review {
+  id            String @id @default(cuid())
+  content       String
+  rating        Int
+  dateSubmitted String
+  orderId       String @unique
+  order         Order  @relation(fields: [orderId], references: [id])
+}
+
+model Payment {
+  id            String @id @default(cuid())
+  amount        Float
+  paymentMethod String
+  paymentTime   String
+  orderId       String @unique
+  order         Order  @relation(fields: [orderId], references: [id])
+}
