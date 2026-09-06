@@ -190,8 +190,8 @@ export default function CustomerView({ restaurant, menu }: { restaurant: any, me
                 <div>
                   <h3 className="font-bold text-center mb-3">Complete Your Payment</h3>
                   <div className="grid grid-cols-2 gap-2">
-                    <button onClick={() => setPaymentMethod('Card')} className={`py-2 rounded-lg border-2 font-semibold transition-all ${paymentMethod === 'Card' ? 'bg-primary text-primary-foreground border-primary' : 'bg-muted border-transparent text-muted-foreground'}`}>Pay with Card</button>
-                    <button onClick={() => setPaymentMethod('Cash')} className={`py-2 rounded-lg border-2 font-semibold transition-all ${paymentMethod === 'Cash' ? 'bg-primary text-primary-foreground border-primary' : 'bg-muted border-transparent text-muted-foreground'}`}>Pay with Cash</button>
+                    <button onClick={() => setPaymentMethod('Card')} className={`py-2 rounded-lg border-2 font-semibold transition-all ${paymentMethod === 'Card' ? 'bg-primary text-primary-foreground border-primary' : 'bg-muted border-transparent text-muted-foreground'}`}>Pay with Card {"{DEMO}"}</button>
+                    <button onClick={() => setPaymentMethod('Cash')} className={`py-2 rounded-lg border-2 font-semibold transition-all ${paymentMethod === 'Cash' ? 'bg-primary text-primary-foreground border-primary' : 'bg-muted border-transparent text-muted-foreground'}`}>Pay with Cash {"{DEMO}"}</button>
                   </div>
                 </div>
 
@@ -230,7 +230,7 @@ export default function CustomerView({ restaurant, menu }: { restaurant: any, me
                     Cancel
                   </button>
                   <button onClick={handlePayment} disabled={busy} className="w-2/3 bg-green-600 text-white rounded-xl py-4 font-bold shadow-lg shadow-green-600/20 hover:bg-green-700 transition-all flex items-center justify-center gap-2">
-                    {busy ? <Loader2 className="w-5 h-5 animate-spin" /> : <><Receipt size={20}/> Pay ₦{(order.items.reduce((s: number, i: any) => s + i.price * i.quantity, 0) * (1 + tipPercent / 100)).toLocaleString()}</>}
+                    {busy ? <Loader2 className="w-5 h-5 animate-spin" /> : <><Receipt size={20}/> Pay ₦{(order.items.reduce((s: number, i: any) => s + i.price * i.quantity, 0) * (1 + tipPercent / 100)).toLocaleString()} {"{DEMO}"}</>}
                   </button>
                 </div>
               </div>
