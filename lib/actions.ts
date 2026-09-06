@@ -215,19 +215,23 @@ export async function submitComplaint(orderId: string, complaint: string, rating
   return review;
 }
 
-export async function processPayment(orderId: string) {
+export async function processPayment(orderId: string, amount: number, method: string, tip: number = 0) {
   const order = await prisma.order.findUnique({
     where: { id: orderId },
     include: { items: { include: { menuItem: true } } }
   });
   if (!order) return null;
   
-  const total = order.items.reduce((sum, item) => sum + (item.menuItem.itemPrice * item.quantity), 0);
-
   const payment = await prisma.payment.upsert({
     where: { orderId: orderId },
-    update: { amount: total, paymentMethod: "PRETEND", paymentTime: new Date().toISOString() },
-    create: { amount: total, paymentMethod: "PRETEND", paymentTime: new Date().toISOString(), orderId: orderId }
+    update: { amount, paymentMethod: method, tip, paymentTime: new Date().toISOString() },
+    create: { 
+      orderId, 
+      amount,
+      paymentMethod: method,
+      tip,
+      paymentTime: new Date().toISOString() 
+    }
   });
 
   revalidatePath("/", "layout");
