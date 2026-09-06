@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { placeOrder, getOrder, submitComplaint, processPayment } from "@/lib/actions";
+import { placeOrder, getOrder, submitComplaint, processPayment, failOrder } from "@/lib/actions";
 import { motion, AnimatePresence } from "framer-motion";
 import { Loader2, Plus, Minus, Receipt, Clock, Star, UtensilsCrossed } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
@@ -15,6 +15,8 @@ export default function CustomerView({ restaurant, menu }: { restaurant: any, me
   const [rating, setRating] = useState(0);
   const [busy, setBusy] = useState(false);
   const [orderNote, setOrderNote] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState("Card");
+  const [tipPercent, setTipPercent] = useState(0);
 
   useEffect(() => {
     const saved = localStorage.getItem(`chowly_order_${restaurant.id}`);
@@ -73,13 +75,29 @@ export default function CustomerView({ restaurant, menu }: { restaurant: any, me
     setBusy(false);
   };
 
-  const handlePayment = async () => {
+  const handleCancel = async () => {
     if (!orderId) return;
     setBusy(true);
     try {
-      await processPayment(orderId);
+      await failOrder(orderId, "Customer cancelled payment");
       setOrder(await getOrder(orderId));
-      toast.success("Payment processed!");
+      toast.error("Order cancelled");
+    } catch (e) {}
+    setBusy(false);
+  };
+
+  const handlePayment = async () => {
+    if (!orderId) return;
+    setBusy(true);
+    
+    // Calculate totals for payment
+    const orderTotal = order.items.reduce((sum: number, it: any) => sum + it.price * it.quantity, 0);
+    const tipAmount = (orderTotal * tipPercent) / 100;
+    
+    try {
+      await processPayment(orderId, orderTotal + tipAmount, paymentMethod, tipAmount);
+      setOrder(await getOrder(orderId));
+      toast.success(`Payment of ₦${(orderTotal + tipAmount).toLocaleString()} processed via ${paymentMethod}!`);
     } catch (e) {
       toast.error("Payment failed");
     }
@@ -167,10 +185,63 @@ export default function CustomerView({ restaurant, menu }: { restaurant: any, me
               </div>
             )}
 
-            {!order.isPaid ? (
-              <button onClick={handlePayment} disabled={busy} className="w-full bg-green-600 text-white rounded-xl py-4 font-bold shadow-lg shadow-green-600/20 hover:bg-green-700 transition-all flex items-center justify-center gap-2">
-                {busy ? <Loader2 className="w-5 h-5 animate-spin" /> : <><Receipt size={20}/> Complete Payment</>}
-              </button>
+            {!order.isPaid && order.status !== "failed" ? (
+              <div className="pt-6 border-t border-dashed border-border space-y-5">
+                <div>
+                  <h3 className="font-bold text-center mb-3">Complete Your Payment</h3>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button onClick={() => setPaymentMethod('Card')} className={`py-2 rounded-lg border-2 font-semibold transition-all ${paymentMethod === 'Card' ? 'bg-primary text-primary-foreground border-primary' : 'bg-muted border-transparent text-muted-foreground'}`}>Pay with Card</button>
+                    <button onClick={() => setPaymentMethod('Cash')} className={`py-2 rounded-lg border-2 font-semibold transition-all ${paymentMethod === 'Cash' ? 'bg-primary text-primary-foreground border-primary' : 'bg-muted border-transparent text-muted-foreground'}`}>Pay with Cash</button>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span className="font-semibold">Tip the staff (Optional)</span>
+                    <span className="text-muted-foreground">₦{((order.items.reduce((s: number, i: any) => s + i.price * i.quantity, 0) * tipPercent) / 100).toLocaleString()}</span>
+                  </div>
+                  <div className="flex gap-2">
+                    {[0, 10, 15, 20].map(t => (
+                      <button key={t} onClick={() => setTipPercent(t)} className={`flex-1 py-1.5 rounded-lg text-sm font-medium border-2 transition-all ${tipPercent === t ? 'bg-primary text-primary-foreground border-primary' : 'bg-muted border-transparent text-muted-foreground'}`}>
+                        {t === 0 ? 'None' : `${t}%`}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {paymentMethod === 'Card' && (
+                  <div className="space-y-2 pt-2 bg-muted/30 p-3 rounded-xl border border-border">
+                    <input type="text" placeholder="Card Number (0000 0000 0000 0000)" className="w-full p-2.5 border border-border bg-background rounded-lg text-sm outline-none focus:border-primary" />
+                    <div className="flex gap-2">
+                      <input type="text" placeholder="MM/YY" className="w-full p-2.5 border border-border bg-background rounded-lg text-sm outline-none focus:border-primary" />
+                      <input type="text" placeholder="CVC" className="w-full p-2.5 border border-border bg-background rounded-lg text-sm outline-none focus:border-primary" />
+                    </div>
+                  </div>
+                )}
+
+                {paymentMethod === 'Cash' && (
+                  <div className="bg-primary/10 border border-primary/20 text-primary p-3 rounded-xl text-sm text-center font-medium">
+                    Please prepare exact cash or wait for your waiter to process the payment at your table.
+                  </div>
+                )}
+
+                <div className="flex gap-3">
+                  <button onClick={handleCancel} disabled={busy} className="w-1/3 bg-muted text-muted-foreground rounded-xl py-4 font-bold shadow-sm hover:bg-destructive hover:text-destructive-foreground transition-all">
+                    Cancel
+                  </button>
+                  <button onClick={handlePayment} disabled={busy} className="w-2/3 bg-green-600 text-white rounded-xl py-4 font-bold shadow-lg shadow-green-600/20 hover:bg-green-700 transition-all flex items-center justify-center gap-2">
+                    {busy ? <Loader2 className="w-5 h-5 animate-spin" /> : <><Receipt size={20}/> Pay ₦{(order.items.reduce((s: number, i: any) => s + i.price * i.quantity, 0) * (1 + tipPercent / 100)).toLocaleString()}</>}
+                  </button>
+                </div>
+              </div>
+            ) : order.status === "failed" ? (
+              <div className="pt-6 border-t border-dashed border-border text-center">
+                <div className="text-destructive font-bold mb-2 bg-destructive/10 py-2 rounded-lg">ORDER CANCELLED</div>
+                <p className="text-sm text-muted-foreground mb-4">Reason: {order.failedReason}</p>
+                <button onClick={startNewOrder} className="w-full border-2 border-border text-foreground rounded-xl py-3 font-semibold hover:bg-muted transition">
+                  Start New Order
+                </button>
+              </div>
             ) : (
               <div className="pt-6 border-t border-dashed border-border">
                 <div className="text-center text-green-600 font-bold mb-4 bg-green-600/10 py-2 rounded-lg">PAID</div>

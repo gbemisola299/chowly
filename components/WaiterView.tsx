@@ -108,6 +108,13 @@ export default function WaiterView({ restaurant, staff, initialOrders }: { resta
                         </div>
                       )}
 
+                      {order.tipAmount > 0 && (
+                        <div className="bg-green-500/10 border border-green-500/20 text-green-600 p-3 rounded-lg text-sm mt-3 flex items-center justify-between font-bold">
+                          <span>Tip Added! 🎉</span>
+                          <span>+₦{order.tipAmount.toLocaleString()}</span>
+                        </div>
+                      )}
+
                       <div className="space-y-3 pt-4 border-t border-border">
                         <select
                           value={sel.chef}

@@ -60,7 +60,7 @@ async function mapOrders(orders: any[]) {
     assignedBartender: order.bartender?.name || null,
     complaint: order.review?.content || null,
     rating: order.review?.rating || null,
-    isPaid: !!order.payment,
+    isPaid: !!order.payment, tipAmount: order.payment?.tip || null,
     items: order.items.map((i: any) => ({
       menuId: i.menuItem.id,
       name: i.menuItem.itemName, itemType: i.menuItem.itemType,
@@ -232,4 +232,13 @@ export async function processPayment(orderId: string) {
 
   revalidatePath("/", "layout");
   return payment;
+}
+
+export async function failOrder(orderId: string, reason: string) {
+  const order = await prisma.order.update({
+    where: { id: orderId },
+    data: { status: "failed", failedReason: reason },
+  });
+  revalidatePath("/", "layout");
+  return order;
 }

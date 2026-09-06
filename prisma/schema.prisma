@@ -53,6 +53,7 @@ model Order {
   waitTime     Int         @default(0) // Kept as waitTime to match schema but changed to Int
   note         String?
   status       String      @default("pending")
+  failedReason String?
   restaurantId String
   restaurant   Restaurant  @relation(fields: [restaurantId], references: [id])
   waiterId     String?
@@ -112,6 +113,7 @@ model Review {
 model Payment {
   id            String @id @default(cuid())
   amount        Float
+  tip           Float @default(0)
   paymentMethod String
   paymentTime   String
   orderId       String @unique
