@@ -36,7 +36,7 @@ export function AppShellHeader({
               <UtensilsCrossed size={20} />
             </motion.div>
             <h1 className="text-2xl font-black tracking-tight text-foreground flex items-center gap-1">
-              GB<span className="text-primary">-chow</span>
+              Chow<span className="text-primary">ly</span>
             </h1>
           </Link>
           {restaurantName && (

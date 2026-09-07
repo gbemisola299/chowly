@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "GB-chow",
+  title: "Chowly",
   description: "Restaurant Marketplace",
 };
 

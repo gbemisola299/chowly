@@ -121,7 +121,7 @@ export default function CustomerView({ restaurant, menu }: { restaurant: any, me
         <Card className="bg-card shadow-2xl border-0 overflow-hidden">
           <div className="bg-primary p-6 text-primary-foreground text-center flex flex-col items-center gap-2">
             <UtensilsCrossed size={32} className="opacity-90" />
-            <h2 className="text-2xl font-bold tracking-tight">GB-chow</h2>
+            <h2 className="text-2xl font-bold tracking-tight">Chowly</h2>
             <p className="text-primary-foreground/80 text-sm">Receipt for {restaurant.name}</p>
           </div>
           <CardContent className="p-6 space-y-6">
